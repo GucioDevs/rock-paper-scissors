@@ -4,7 +4,7 @@ function getComputerChoice (){
     return choices[Math.floor(Math.random()*choices.length)]
 }
 
-function playRound(playerChoice, computerChoice){
+function getRoundResult(playerChoice, computerChoice){
 
     if (playerChoice == "rock"){
         
@@ -46,43 +46,75 @@ function playRound(playerChoice, computerChoice){
         }
 
     }
-    
+
     return -2;
 
-}
-
-function areEqualCaseInsensitive(string1, string2){
-    return string1.toUpperCase() === string2.toUpperCase();
 }
 
 let playerScore = 0;
 let computerScore = 0;
 
-function game(){
-    for(let i = 0; i < 5; i++){
-        let playerChoice = prompt().toLowerCase();
-        let computerChoice = getComputerChoice();
-        
-        switch(playRound(playerChoice,computerChoice)){
-            case -1:
-                computerScore++;
-                console.log("You lose! " + computerChoice + " beats " +  playerChoice);
-            break;
+function playRound(playerChoice){
 
-            case 0:
-                console.log("It's a tie.");
-            break;
+    let computerChoice = getComputerChoice();
+    
+    switch(getRoundResult(playerChoice,computerChoice)){
+        case -1:
+            computerScore++;
+            updateMessage("you lose - " + computerChoice + " beats " +  playerChoice + ".");
+            updateScore(playerScore, computerScore);
+        break;
 
-            case 1:
-                playerScore++;
-                console.log("You win! " + playerChoice + " beats " +  computerChoice);
-            break;
+        case 0:
+            updateMessage("tie.");
+        break;
 
-            case -2:
-                console.log("Invalid input.");
-            break;
-        }
+        case 1:
+            playerScore++;
+            updateMessage("you win - " + playerChoice + " beats " +  computerChoice + ".");
+            updateScore(playerScore, computerScore);
+        break;
 
+        case -2:
+            updateMessage("invalid input.");
+        break;
     }
+
+    if(computerScore >= 5){
+        updateMessage("defeat. you lost " + computerScore + " to " + playerScore + ".");
+        reset();
+    }else if(playerScore >= 5){
+        updateMessage("you won the game " + playerChoice + " to " + computerChoice + ".");
+        reset();
+    }
+
+    
 }
+
+function reset(){
+    computerScore = 0;
+    playerScore = 0;
+    updateScore(playerScore, computerScore);
+}
+
+function buttonClicked(e){
+    playRound(e.srcElement.id);
+}
+
+const buttons = document.querySelectorAll('.button');
+buttons.forEach(button => {
+    button.addEventListener('click', buttonClicked)
+});
+
+const scoreText = document.querySelector('.score');
+function updateScore(playerScore, computerScore){
+    scoreText.textContent = "" + playerScore + " " + computerScore;
+}
+
+const messageText = document.querySelector('.message');
+function updateMessage(message){
+    messageText.textContent = message;
+}
+
+reset();
 
